@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "api/*.js", "use": "@vercel/node" },
+    { "src": "index.html", "use": "@vercel/static" },
+    { "src": "app.js", "use": "@vercel/static" },
+    { "src": "styles.css", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/api/health/?", "dest": "/api/health.js" },
+    { "src": "/api/analyze/?", "dest": "/api/analyze.js" },
+    { "src": "/api/export/?", "dest": "/api/export.js" },
+    { "src": "/app.js", "dest": "/app.js" },
+    { "src": "/styles.css", "dest": "/styles.css" },
+    { "src": "/", "dest": "/index.html" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store" }
+      ]
+    }
+  ]
+}

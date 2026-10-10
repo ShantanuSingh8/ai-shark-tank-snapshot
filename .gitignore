@@ -1,0 +1,28 @@
+.vercel/
+.tools/
+
+# Local secrets
+.env
+.env.*
+github_token.txt
+
+# Local/generated data
+downloads/
+extracted/
+references/
+
+# Logs and local runtime state
+*.log
+*.pid
+local-health-final.txt
+local-server-status.json
+port-4173-before.json
+node-version.log
+
+# Temporary files
+tmp-*
+tmp_*
+
+# OS/editor noise
+.DS_Store
+Thumbs.db

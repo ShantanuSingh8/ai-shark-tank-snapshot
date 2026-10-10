@@ -1,0 +1,14 @@
+{
+  "name": "ai-shark-tank-snapshot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI Shark Tank annual report snapshot app with SEC discovery and Vercel serverless APIs.",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node tests/smoke.test.js && node tests/server-smoke.test.js && node tests/sec-search-fallback.test.js && node tests/banking-revenue.test.js && node tests/vercel-api.test.js",
+    "publish:github": "node scripts/publish-github.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="End-to-end annual report automation for public equity snapshots" />
+    <title>Public Equity Automation Snapshot</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="sidebar" aria-label="Workflow navigation">
+        <div class="brand" aria-label="Public Equity Automation Snapshot">
+          <div class="brand-mark">AR</div>
+          <div>
+            <p class="eyebrow">AI Shark Tank</p>
+            <h1>Annual Report Automation</h1>
+          </div>
+        </div>
+
+        <nav class="nav-list" aria-label="Dashboard sections">
+          <a class="nav-item active" href="#input">Input</a>
+          <a class="nav-item" href="#workflow">Workflow</a>
+          <a class="nav-item" href="#snapshot">Snapshot</a>
+          <a class="nav-item" href="#evidence">Evidence</a>
+        </nav>
+
+        <section class="brief-card">
+          <p class="eyebrow">Challenge Requirement</p>
+          <h2>Discover → Download → Extract → Calculate → Validate → Generate</h2>
+          <p>
+            This version works from a company input, finds the latest applicable annual report,
+            extracts reported datapoints, calculates ratios, preserves evidence, and exports a template-aligned workbook.
+          </p>
+        </section>
+
+        <section class="source-card">
+          <p class="eyebrow">Source Policy</p>
+          <ul>
+            <li>Latest annual filing only</li>
+            <li>SEC EDGAR first for US-listed issuers</li>
+            <li>Manual annual-report URL fallback</li>
+            <li>Not Available / Human Review logic</li>
+          </ul>
+        </section>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Working Automation Workflow</p>
+            <h2>Public Equity Snapshot Generator</h2>
+          </div>
+          <div class="topbar-actions">
+            <span class="status-pill checking" id="serverStatusPill"><span class="status-dot"></span><span id="serverStatus">Checking backend...</span></span>
+            <button class="button ghost" id="resetButton" type="button">Reset</button>
+            <button class="button primary" id="exportButton" type="button" disabled>Export to Excel</button>
+          </div>
+        </header>
+
+        <section class="hero" id="input">
+          <div class="hero-copy">
+            <p class="eyebrow">Company Input</p>
+            <h2>Give the issuer identifiers. The app does the annual-report workflow.</h2>
+            <p>
+              Required inputs match the challenge pack: Company Name, Company Ticker, Sector, and Industry.
+              For non-SEC or foreign issuers, paste a direct latest annual-report HTML URL as fallback.
+            </p>
+          </div>
+          <div class="hero-score" aria-label="Completion score">
+            <span>Validated Fields</span>
+            <strong id="validatedCount">0</strong>
+            <small id="validatedCaption">Run analysis to populate</small>
+          </div>
+        </section>
+
+        <section class="panel form-panel" aria-label="Company annual report input form">
+          <form id="companyForm">
+            <div class="control-group">
+              <label for="companyName">Company Name</label>
+              <input id="companyName" name="companyName" required placeholder="Microsoft Corp" value="Microsoft Corp" />
+            </div>
+            <div class="control-group">
+              <label for="ticker">Company Ticker</label>
+              <input id="ticker" name="ticker" required placeholder="MSFT" value="MSFT" />
+            </div>
+            <div class="control-group">
+              <label for="sector">Sector / Type of Business</label>
+              <input id="sector" name="sector" required placeholder="Technology" value="Technology" />
+            </div>
+            <div class="control-group">
+              <label for="industry">Industry</label>
+              <input id="industry" name="industry" required placeholder="Software - Infrastructure" value="Software - Infrastructure" />
+            </div>
+            <div class="control-group wide">
+              <label for="annualReportUrl">Optional Manual Latest Annual Report URL</label>
+              <input id="annualReportUrl" name="annualReportUrl" placeholder="Use only if SEC discovery cannot find the issuer" />
+            </div>
+            <div class="form-actions">
+              <button class="button primary" id="analyzeButton" type="submit">Run End-to-End Analysis</button>
+              <span id="formHint">Downloads the latest annual report and generates a validated snapshot.</span>
+            </div>
+          </form>
+        </section>
+
+        <section class="metric-grid" aria-label="Workflow metrics">
+          <article class="metric-card">
+            <span>Source</span>
+            <strong id="sourceType">--</strong>
+            <small id="sourceDetail">No report selected</small>
+          </article>
+          <article class="metric-card">
+            <span>Report Type</span>
+            <strong id="reportType">--</strong>
+            <small id="filingDate">--</small>
+          </article>
+          <article class="metric-card">
+            <span>Review Items</span>
+            <strong id="reviewCount">0</strong>
+            <small>Human Review + Not Available</small>
+          </article>
+          <article class="metric-card">
+            <span>Download</span>
+            <strong id="downloadStatus">--</strong>
+            <small id="downloadPath">--</small>
+          </article>
+        </section>
+
+        <section class="content-grid">
+          <section class="panel table-panel" id="snapshot" aria-labelledby="snapshotTitle">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Template-Aligned Output</p>
+                <h3 id="snapshotTitle">27 Snapshot Datapoints</h3>
+              </div>
+              <span class="result-count" id="fieldCount">Waiting</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Datapoint</th>
+                    <th>Value</th>
+                    <th>Status</th>
+                    <th>Evidence</th>
+                  </tr>
+                </thead>
+                <tbody id="fieldTableBody">
+                  <tr><td colspan="5">Run analysis to generate the annual-report snapshot.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <aside class="panel detail-panel" id="workflow" aria-label="Workflow status">
+            <div class="panel-header compact">
+              <div>
+                <p class="eyebrow">Automation Pipeline</p>
+                <h3>Execution Log</h3>
+              </div>
+            </div>
+            <div class="steps" id="steps"></div>
+            <section class="memo-block">
+              <h4>Latest Annual Report Rule</h4>
+              <p id="policyText">Only the latest applicable annual filing/report is used. Run analysis to see selected source.</p>
+            </section>
+            <section class="memo-block" id="evidence">
+              <h4>Selected Source</h4>
+              <p id="sourceUrl">--</p>
+            </section>
+          </aside>
+        </section>
+
+        <section class="panel insight-panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Client-Ready Insight Fields</p>
+              <h3>Generated Narrative</h3>
+            </div>
+            <span class="result-count" id="analysisStatus">Not run</span>
+          </div>
+          <div class="insight-list" id="insights">
+            <p>Business summary, growth drivers, strategic priorities, risks, and one-line investment snapshot will appear here after extraction.</p>
+          </div>
+        </section>
+
+        <section class="content-grid secondary-grid">
+          <section class="panel" aria-labelledby="scopeTitle">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Master Prompt Rule</p>
+                <h3 id="scopeTitle">Reporting Scope Verification</h3>
+              </div>
+              <span class="result-count">Consolidated first</span>
+            </div>
+            <div class="info-grid" id="scopePanel">
+              <p>Run analysis to verify subsidiary status and the selected financial statement basis.</p>
+            </div>
+          </section>
+
+          <section class="panel" aria-labelledby="debtTitle">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Debt Calculation</p>
+                <h3 id="debtTitle">Debt Components</h3>
+              </div>
+              <span class="result-count">No double-counting</span>
+            </div>
+            <div class="table-wrap compact-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Component</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="debtTableBody">
+                  <tr><td colspan="3">Run analysis to calculate debt components.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section class="panel insight-panel" id="final-report">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Required Final Output Structure</p>
+              <h3>Final Report A–H</h3>
+            </div>
+            <span class="result-count">Source verified</span>
+          </div>
+          <div class="report-sections" id="finalReport">
+            <p>Run analysis to generate sections A-H from the master prompt.</p>
+          </div>
+        </section>
+
+        <section class="panel insight-panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Page-Level Evidence</p>
+              <h3>Source Annotation Table</h3>
+            </div>
+            <span class="result-count" id="annotationCount">0 rows</span>
+          </div>
+          <div class="table-wrap compact-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Factor</th>
+                  <th>Claim</th>
+                  <th>Section</th>
+                  <th>Printed Page</th>
+                  <th>PDF Page</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="annotationTableBody">
+                <tr><td colspan="6">Run analysis to populate source annotations.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
