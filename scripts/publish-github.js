@@ -14,6 +14,7 @@ const INCLUDE_FILES = [
   '.vercelignore',
   'README.md',
   'assets/.gitkeep',
+  'assets/company-snapshot-ai-infographic.png',
   'package.json',
   'vercel.json',
   'index.html',
@@ -84,6 +85,20 @@ function readUtf8(repoPath) {
   return fs.readFileSync(absolutePath, 'utf8');
 }
 
+function readBlobContent(repoPath) {
+  const absolutePath = path.join(ROOT, repoPath);
+  if (!fs.existsSync(absolutePath)) {
+    throw new Error(`Expected source file is missing: ${absolutePath}`);
+  }
+
+  const buffer = fs.readFileSync(absolutePath);
+  if (/\.(png|jpe?g|gif|webp|ico|pdf|xlsx?|zip)$/i.test(repoPath)) {
+    return { content: buffer.toString('base64'), encoding: 'base64' };
+  }
+
+  return { content: buffer.toString('utf8'), encoding: 'utf-8' };
+}
+
 function isMissingOrEmptyRepo(error) {
   const message = String(error && error.message ? error.message : error);
   return message.includes('404') || message.includes('409 Git Repository is empty');
@@ -142,10 +157,11 @@ async function bootstrapEmptyRepository(token) {
 }
 
 async function createBlob(token, repoPath) {
+  const { content, encoding } = readBlobContent(repoPath);
   const blob = await githubFetch(token, `/repos/${OWNER}/${REPO}/git/blobs`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ content: readUtf8(repoPath), encoding: 'utf-8' }),
+    body: JSON.stringify({ content, encoding }),
   });
   console.log(`Prepared ${repoPath}`);
   return {

@@ -2,21 +2,11 @@
 
 A dependency-free local Node + browser app for the hackathon challenge. It accepts a company name, ticker, sector, and industry, discovers the latest annual filing/report, downloads it, extracts required datapoints, calculates ratios, validates evidence/status, and generates an Excel-compatible snapshot output.
 
-## Infographic placeholder
+## Company Snapshot AI workflow infographic
 
-The project is ready for an optional **Company Snapshot AI** workflow infographic. The original image shared during setup is not stored in this workspace, so it is not committed yet.
-
-To add it later, save the image as:
-
-`assets/company-snapshot-ai-infographic.png`
-
-Then embed it here with:
-
-```md
 ![Company Snapshot AI workflow infographic](assets/company-snapshot-ai-infographic.png)
-```
 
-The `assets/` folder is kept in the repository with `assets/.gitkeep` until the real image is available.
+The infographic summarizes the deploy-ready annual-report automation workflow: **Discover → Download → Extract → Calculate → Validate → Deliver**.
 
 The actual participant brief and template were found in `C:\Users\ssingh5\Downloads` and copied to `references\`. `Training 82 companies.xlsx` was not found on disk, so the app is aligned to the available PPTX and `Training Template.xlsx` specification.
 
